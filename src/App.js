@@ -51,10 +51,31 @@ class App extends Component {
       )
     }
 
+    // TODO: this is just for testing, remove soon
+    const gs = await this.toGreyScale(resized)
+    tf.toPixels(gs, this.canvas)
+
     // Reshape to a single-element batch so we can pass it to predict.
     const batched = resized.reshape([1, IMAGE_SIZE, IMAGE_SIZE, 3])
 
     return batched
+  }
+
+  toGreyScale = async t3d => {
+    const minTensor = t3d.min()
+    const maxTensor = t3d.max()
+    const min = (await minTensor.data())[0]
+    const max = (await maxTensor.data())[0]
+    minTensor.dispose()
+    maxTensor.dispose()
+    console.log({ min, max })
+
+    // normalize to [0, 1]
+    const rescaled = t3d.sub(min).div(max - min)
+    let gs = rescaled.mean(2)
+    gs = gs.expandDims(2)
+
+    return gs
   }
 
   loadModel = async () => {
@@ -86,6 +107,8 @@ class App extends Component {
     return (
       <div className="container">
         <p>stay tuned :)</p>
+        <img src={imgs.dog} width={IMAGE_SIZE} height={IMAGE_SIZE} alt="demo" />
+        <canvas ref={el => (this.canvas = el)} />
       </div>
     )
   }
