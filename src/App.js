@@ -1,12 +1,19 @@
 import React, { Component } from 'react'
 import * as tf from '@tensorflow/tfjs'
 
-import { IMAGENET_CLASSES } from './imagenetClasses'
+import {
+  EMOTION_CLASSES as emotion,
+  GENDER_CLASSES as gender,
+  IMAGENET_CLASSES as imagenet
+} from './imgLabels'
 
-import cat from './cat.jpg'
-import dog from './dog.jpg'
+import cat from './img/cat.jpg'
+import dog from './img/dog.jpg'
+import faceHappy from './img/face-happy.png'
+import faceSurprise from './img/face-surprise.png'
 
-const imgs = { cat, dog }
+const imgs = { cat, dog, faceHappy, faceSurprise }
+const labels = { emotion, gender, imagenet }
 
 const getImg = imgSrc =>
   new Promise(resolve => {
@@ -16,12 +23,23 @@ const getImg = imgSrc =>
     img.onload = () => resolve(img)
   })
 
-const IMAGE_SIZE = 224
 const NORM_OFFSET = tf.scalar(127.5)
+
+// TODO: abstract this away
+const DIMS = 3
 
 const MODEL_PATH =
   'https://storage.googleapis.com/tfjs-models/tfjs/mobilenet_v1_0.25_224/model.json'
+const IMAGE_SIZE = 224
+
 // const MODEL_PATH = `${process.env.PUBLIC_URL}/static/model/emotion/model.json`
+// const IMAGE_SIZE = 48
+
+// const MODEL_PATH = `${process.env.PUBLIC_URL}/static/model/gender/model.json`
+// const IMAGE_SIZE = 48
+
+const SAMPLE_IMG = imgs.dog
+const CLASSES = labels.imagenet
 
 class App extends Component {
   componentDidMount() {
@@ -55,9 +73,10 @@ class App extends Component {
     const gs = await this.toGreyScale(resized)
     tf.toPixels(gs, this.canvas)
 
+    if (DIMS === 1) return gs.reshape([1, IMAGE_SIZE, IMAGE_SIZE, DIMS])
+
     // Reshape to a single-element batch so we can pass it to predict.
     const batched = resized.reshape([1, IMAGE_SIZE, IMAGE_SIZE, 3])
-
     return batched
   }
 
@@ -86,7 +105,7 @@ class App extends Component {
 
     // warmup model
     const result = tf.tidy(() =>
-      this.model.predict(tf.zeros([1, IMAGE_SIZE, IMAGE_SIZE, 3]))
+      this.model.predict(tf.zeros([1, IMAGE_SIZE, IMAGE_SIZE, DIMS]))
     )
     await result.data()
 
@@ -96,10 +115,11 @@ class App extends Component {
     console.log({ inShape, outShape })
 
     // predict!
-    const inputs = await this.prepImg(imgs.dog)
+    const inputs = await this.prepImg(SAMPLE_IMG)
     const logits = this.model.predict(inputs).dataSync()
+    console.log('logits', logits)
     const maxProb = Math.max.apply(null, logits)
-    const topClass = IMAGENET_CLASSES[logits.indexOf(maxProb)]
+    const topClass = CLASSES[logits.indexOf(maxProb)]
     console.log(topClass)
   }
 
@@ -107,7 +127,12 @@ class App extends Component {
     return (
       <div className="container">
         <p>stay tuned :)</p>
-        <img src={imgs.dog} width={IMAGE_SIZE} height={IMAGE_SIZE} alt="demo" />
+        <img
+          src={SAMPLE_IMG}
+          width={IMAGE_SIZE}
+          height={IMAGE_SIZE}
+          alt="demo"
+        />
         <canvas ref={el => (this.canvas = el)} />
       </div>
     )

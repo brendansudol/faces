@@ -1,3 +1,15 @@
+export const GENDER_CLASSES = { 0: 'Woman', 1: 'Man' }
+
+export const EMOTION_CLASSES = {
+  0: 'Angry',
+  1: 'Disgust',
+  2: 'Fear',
+  3: 'Happy',
+  4: 'Sad',
+  5: 'Surprise',
+  6: 'Neutral'
+}
+
 export const IMAGENET_CLASSES = {
   0: 'tench, Tinca tinca',
   1: 'goldfish, Carassius auratus',
