@@ -7,6 +7,8 @@ import {
   IMAGENET_CLASSES as imagenet
 } from './imgLabels'
 
+import { MobileNet } from './model/mobilenet'
+
 import cat from './img/cat.jpg'
 import dog from './img/dog.jpg'
 import faceHappy from './img/face-happy.png'
@@ -43,7 +45,16 @@ const CLASSES = labels.imagenet
 
 class App extends Component {
   componentDidMount() {
-    this.loadModel()
+    this.go()
+  }
+
+  go = async () => {
+    const model = new MobileNet()
+    await model.load()
+
+    const img = await getImg(SAMPLE_IMG)
+    const results = await model.classify(img)
+    console.log(JSON.stringify(results, null, 2))
   }
 
   prepImg = async imgSrc => {
