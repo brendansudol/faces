@@ -7,7 +7,7 @@ import {
   IMAGENET_CLASSES as imagenet
 } from './imgLabels'
 
-import { MobileNet } from './model/mobilenet'
+import { MobileNet } from './model/mobilenet2'
 
 import cat from './img/cat.jpg'
 import dog from './img/dog.jpg'
@@ -49,7 +49,7 @@ class App extends Component {
   }
 
   go = async () => {
-    const model = new MobileNet()
+    const model = MobileNet()
     await model.load()
 
     const img = await getImg(SAMPLE_IMG)

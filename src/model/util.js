@@ -38,10 +38,10 @@ export const rgbToGrayscale = async imgTensor => {
   maxTensor.dispose()
 
   // Normalize to [0, 1]
-  const normalized = t3d.sub(min).div(max - min)
+  const normalized = imgTensor.sub(min).div(max - min)
 
   // Compute mean of R, G, and B values
-  let grayscale = rescaled.mean(2)
+  let grayscale = normalized.mean(2)
 
   // Expand dimensions to get proper shape: (h, w, 1)
   return grayscale.expandDims(2)

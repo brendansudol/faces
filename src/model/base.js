@@ -1,36 +1,36 @@
 import * as tf from '@tensorflow/tfjs'
 
-import { IMAGENET_CLASSES } from './classes'
 import { prepImg } from './util'
 
-const IMAGE_SIZE = 224
-const MODEL_PATH =
-  'https://storage.googleapis.com/tfjs-models/tfjs/mobilenet_v1_0.25_224/model.json'
+class Model {
+  constructor({ path, imageSize, classes }) {
+    this.path = path
+    this.imageSize = imageSize
+    this.classes = classes
+  }
 
-export class MobileNet {
   async load() {
-    this.model = await tf.loadModel(MODEL_PATH)
+    this.model = await tf.loadModel(this.path)
 
     // Warmup model
-    const inputShape = this.model.inputs[0].shape.slice(1)
-    const result = tf.tidy(() =>
-      this.model.predict(tf.zeros([1, ...inputShape]))
-    )
-
+    const inShape = this.model.inputs[0].shape.slice(1)
+    const result = tf.tidy(() => this.model.predict(tf.zeros([1, ...inShape])))
     await result.data()
     result.dispose()
   }
 
-  async classify(img, topK = 10) {
+  async imgToInputs(img) {
     // Convert to tensor & resize if necessary
-    const imgNorm = await prepImg(img, IMAGE_SIZE)
+    const norm = await prepImg(img, this.imageSize)
 
     // Reshape to a single-element batch so we can pass it to predict.
-    const inputs = imgNorm.reshape([1, ...imgNorm.shape])
+    return norm.reshape([1, ...norm.shape])
+  }
 
+  async classify(img, topK = 10) {
+    const inputs = await this.imgToInputs(img)
     const logits = this.model.predict(inputs)
     const classes = await this.getTopKClasses(logits, topK)
-
     return classes
   }
 
@@ -47,7 +47,9 @@ export class MobileNet {
       .slice(0, topK)
 
     return predictionList.map(x => {
-      return { label: IMAGENET_CLASSES[x.index], value: x.value }
+      return { label: this.classes[x.index], value: x.value }
     })
   }
 }
+
+export default Model
