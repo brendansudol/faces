@@ -5,6 +5,7 @@
   "private": true,
   "dependencies": {
     "@tensorflow/tfjs": "^0.12.3",
+    "face-api.js": "^0.10.0",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
     "react-scripts": "1.1.4"
