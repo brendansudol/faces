@@ -19,3 +19,9 @@ body {
 .relative {
   position: relative;
 }
+
+.faces canvas {
+  width: 100px;
+  height: auto;
+  margin-right: 0.5rem;
+}
