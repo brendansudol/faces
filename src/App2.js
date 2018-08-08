@@ -1,19 +1,19 @@
 import React, { Component } from 'react'
-import * as faceapi from 'face-api.js/dist/face-api.js'
 
-import img from './img/faces2.jpg'
+import * as faceapi from 'face-api.js'
 
-const getImg = src =>
-  new Promise(resolve => {
-    const img = new Image()
-    img.src = src
-    img.crossOrigin = '*'
-    img.onload = () => resolve(img)
-  })
+import img from './img/faces.jpg'
+import cat from './img/cat.jpg'
+
+import { GenderNet } from './model/gendernet'
+import { EmotionNet } from './model/emotionnet'
+import { MobileNet } from './model/mobilenet3'
+import { getImg } from './util/img'
 
 class App2 extends Component {
   componentDidMount() {
     this.initModel2()
+    // this.tryMobileNet()
   }
 
   initModel = async () => {
@@ -61,6 +61,43 @@ class App2 extends Component {
 
     const faceImgs = await faceapi.extractFaces(input.inputs[0], detections)
     faceImgs.forEach(canvas => this.facesContainer.appendChild(canvas))
+
+    this.tryEmotionNet(faceImgs)
+    this.tryGenderNet(faceImgs)
+  }
+
+  tryEmotionNet = async imgs => {
+    console.log(imgs)
+
+    const img = imgs[0]
+    console.log(img)
+
+    const model = new EmotionNet()
+    await model.load()
+
+    const results = await model.classify(img)
+    console.log(JSON.stringify(results, null, 2))
+  }
+
+  tryGenderNet = async imgs => {
+    console.log(imgs)
+
+    const img = imgs[0]
+    console.log(img)
+
+    const model = new GenderNet()
+    await model.load()
+
+    const results = await model.classify(img)
+    console.log(JSON.stringify(results, null, 2))
+  }
+
+  tryMobileNet = async () => {
+    const model = new MobileNet()
+    await model.load()
+    const img = await getImg(cat)
+    const results = await model.classify(img)
+    console.log(JSON.stringify(results, null, 2))
   }
 
   render() {

@@ -1,14 +1,14 @@
 import React, { Component } from 'react'
-import * as tf from '@tensorflow/tfjs'
 
 import {
   EMOTION_CLASSES as emotion,
   GENDER_CLASSES as gender,
   IMAGENET_CLASSES as imagenet
-} from './imgLabels'
-
-import { initMobileNet } from './model/mobilenet2'
-import { getImg, prepImg, rgbToGrayscale } from './model/util'
+} from './model/classes'
+import { EmotionNet } from './model/emotionnet'
+import { MobileNet } from './model/mobilenet2'
+import { getImg, prepImg, rgbToGrayscale } from './util/img'
+import { tf } from './util/tf'
 
 import cat from './img/cat.jpg'
 import dog from './img/dog.jpg'
@@ -36,15 +36,24 @@ const CLASSES = labels.imagenet
 
 class App extends Component {
   componentDidMount() {
-    // this.go()
-    this.loadModel()
+    this.go2()
+    // this.loadModel()
   }
 
   go = async () => {
-    const model = initMobileNet()
+    const model = new MobileNet()
     await model.load()
 
     const img = await getImg(SAMPLE_IMG)
+    const results = await model.classify(img)
+    console.log(JSON.stringify(results, null, 2))
+  }
+
+  go2 = async () => {
+    const model = new EmotionNet()
+    await model.load()
+
+    const img = await getImg(imgs.faceSurprise)
     const results = await model.classify(img)
     console.log(JSON.stringify(results, null, 2))
   }
@@ -56,7 +65,6 @@ class App extends Component {
     // TODO: this is just for testing, remove soon
     const gs = await rgbToGrayscale(norm)
     tf.toPixels(gs, this.canvas)
-
     if (DIMS === 1) return gs.reshape([1, IMAGE_SIZE, IMAGE_SIZE, DIMS])
 
     // Reshape to a single-element batch so we can pass it to predict.

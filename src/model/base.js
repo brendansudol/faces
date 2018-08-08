@@ -1,12 +1,12 @@
-import * as tf from '@tensorflow/tfjs'
-
-import { prepImg } from './util'
+import { prepImg, rgbToGrayscale } from '../util/img'
+import { tf } from '../util/tf'
 
 class Model {
-  constructor({ path, imageSize, classes }) {
+  constructor({ path, imageSize, classes, isGrayscale = false }) {
     this.path = path
     this.imageSize = imageSize
     this.classes = classes
+    this.isGrayscale = isGrayscale
   }
 
   async load() {
@@ -21,7 +21,11 @@ class Model {
 
   async imgToInputs(img) {
     // Convert to tensor & resize if necessary
-    const norm = await prepImg(img, this.imageSize)
+    let norm = await prepImg(img, this.imageSize)
+
+    if (this.isGrayscale) {
+      norm = await rgbToGrayscale(norm)
+    }
 
     // Reshape to a single-element batch so we can pass it to predict.
     return norm.reshape([1, ...norm.shape])

@@ -1,4 +1,4 @@
-import * as tf from '@tensorflow/tfjs'
+import { tf } from './tf'
 
 const NORMALIZATION_OFFSET = tf.scalar(127.5)
 
@@ -38,7 +38,7 @@ export const rgbToGrayscale = async imgTensor => {
   maxTensor.dispose()
 
   // Normalize to [0, 1]
-  const normalized = imgTensor.sub(min).div(max - min)
+  const normalized = imgTensor.sub(tf.scalar(min)).div(tf.scalar(max - min))
 
   // Compute mean of R, G, and B values
   let grayscale = normalized.mean(2)
