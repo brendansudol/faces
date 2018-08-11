@@ -20,7 +20,7 @@
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
-    "prettier": "prettier --single-quote --trailing-comma es5 --semi false --write \"src/**/*.js\""
+    "prettier": "prettier --single-quote --semi false --write \"src/**/*.js\""
   },
   "devDependencies": {
     "gh-pages": "^1.2.0",

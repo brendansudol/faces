@@ -1,6 +1,6 @@
-export const GENDER_CLASSES = { 0: 'Woman', 1: 'Man' }
+export const GENDER = { 0: 'Woman', 1: 'Man' }
 
-export const EMOTION_CLASSES = {
+export const EMOTION = {
   0: 'Angry',
   1: 'Disgust',
   2: 'Fear',
@@ -10,7 +10,7 @@ export const EMOTION_CLASSES = {
   6: 'Neutral'
 }
 
-export const IMAGENET_CLASSES = {
+export const IMAGENET = {
   0: 'tench, Tinca tinca',
   1: 'goldfish, Carassius auratus',
   2: 'great white shark, white shark, man-eater, man-eating shark, Carcharodon carcharias',

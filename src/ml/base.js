@@ -1,5 +1,5 @@
-import { prepImg, rgbToGrayscale } from '../util/img'
-import { tf } from '../util/tf'
+import { prepImg, rgbToGrayscale } from './img'
+import { tf } from './tf'
 
 class Model {
   constructor({ path, imageSize, classes, isGrayscale = false }) {
@@ -23,6 +23,7 @@ class Model {
     // Convert to tensor & resize if necessary
     let norm = await prepImg(img, this.imageSize)
 
+    // TODO: infer whether this is needed based on model & img shapes
     if (this.isGrayscale) {
       norm = await rgbToGrayscale(norm)
     }

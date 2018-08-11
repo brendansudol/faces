@@ -1,14 +1,11 @@
+import * as faceapi from 'face-api.js'
 import React, { Component } from 'react'
 
-import * as faceapi from 'face-api.js'
+import img from '../img/faces.jpg'
+import cat from '../img/cat.jpg'
 
-import img from './img/faces.jpg'
-import cat from './img/cat.jpg'
-
-import { GenderNet } from './model/gendernet'
-import { EmotionNet } from './model/emotionnet'
-import { MobileNet } from './model/mobilenet3'
-import { getImg } from './util/img'
+import { EmotionNet, GenderNet, MobileNet } from '../ml/models'
+import { getImg } from '../ml/img'
 
 class App2 extends Component {
   componentDidMount() {
@@ -19,7 +16,7 @@ class App2 extends Component {
   initModel = async () => {
     const model = new faceapi.FaceDetectionNet()
     const path =
-      `${process.env.PUBLIC_URL}/static/model/face/` +
+      `${process.env.PUBLIC_URL}/static/models/face/` +
       'ssd_mobilenetv1_model-weights_manifest.json'
 
     await model.load(path)
@@ -36,7 +33,7 @@ class App2 extends Component {
   initModel2 = async () => {
     const model = new faceapi.Mtcnn()
     const path =
-      `${process.env.PUBLIC_URL}/static/model/face/` +
+      `${process.env.PUBLIC_URL}/static/models/face/` +
       'mtcnn_model-weights_manifest.json'
 
     await model.load(path)
