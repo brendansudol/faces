@@ -4,6 +4,10 @@ body {
   font-family: menlo, courier, monospace;
 }
 
+p {
+  margin-top: 0;
+}
+
 .container {
   max-width: 700px;
   margin-left: auto;
@@ -24,4 +28,9 @@ body {
   width: 100px;
   height: auto;
   margin-right: 0.5rem;
+}
+
+.btn-upload input {
+  width: 1px;
+  height: 1px;
 }

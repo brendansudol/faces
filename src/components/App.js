@@ -1,15 +1,26 @@
 import * as faceapi from 'face-api.js'
 import React, { Component } from 'react'
+import Dropzone from 'react-dropzone'
 
 import img from '../img/faces.jpg'
 import cat from '../img/cat.jpg'
 
+import { FaceFinder } from '../ml/face'
 import { EmotionNet, GenderNet, MobileNet } from '../ml/models'
 import { getImg } from '../ml/img'
 
-class App2 extends Component {
+const readFile = file =>
+  new Promise(resolve => {
+    const reader = new FileReader()
+    reader.onload = () => resolve({ file, url: reader.result })
+    reader.readAsDataURL(file)
+  })
+
+class App extends Component {
+  state = { imgUrl: null }
+
   componentDidMount() {
-    this.initModel2()
+    this.initModel3()
     // this.tryMobileNet()
   }
 
@@ -63,6 +74,19 @@ class App2 extends Component {
     this.tryGenderNet(faceImgs)
   }
 
+  initModel3 = async () => {
+    const model = new FaceFinder()
+    await model.load()
+
+    const myImg = await getImg(img)
+    const { detections, faceImgs } = await model.findAndExtractFaces(myImg)
+
+    this.canvas.width = myImg.width
+    this.canvas.height = myImg.height
+    faceapi.drawDetection(this.canvas, detections)
+    faceImgs.forEach(canvas => this.facesContainer.appendChild(canvas))
+  }
+
   tryEmotionNet = async imgs => {
     console.log(imgs)
 
@@ -97,9 +121,34 @@ class App2 extends Component {
     console.log(JSON.stringify(results, null, 2))
   }
 
+  handleUpload = async files => {
+    if (!files.length) return
+
+    const results = await readFile(files[0])
+    console.log(results)
+
+    this.setState({ imgUrl: results.url })
+  }
+
   render() {
+    const { imgUrl } = this.state
+
     return (
       <div className="container">
+        <div className="my3">
+          <div className="mb1">
+            <Dropzone
+              className="btn btn-primary btn-upload"
+              accept="image/jpeg, image/png"
+              multiple={false}
+              onDrop={this.handleUpload}
+            >
+              Upload image
+            </Dropzone>
+          </div>
+          {imgUrl && <img src={imgUrl} alt="uploaded" />}
+        </div>
+
         <div className="relative">
           <img src={img} alt="demo" />
           <canvas ref={el => (this.canvas = el)} className="overlay" />
@@ -110,4 +159,4 @@ class App2 extends Component {
   }
 }
 
-export default App2
+export default App

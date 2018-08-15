@@ -7,9 +7,11 @@
     "@tensorflow/tfjs-converter": "^0.4.3",
     "@tensorflow/tfjs-core": "^0.11.9",
     "@tensorflow/tfjs-layers": "^0.7.2",
+    "ace-css": "^1.1.0",
     "face-api.js": "^0.10.0",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
+    "react-dropzone": "^4.3.0",
     "react-scripts": "1.1.4",
     "tslib": "^1.9.3"
   },
