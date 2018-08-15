@@ -37,3 +37,5 @@ export class FaceFinder {
     return { detections, faceImgs }
   }
 }
+
+export const { drawDetection } = faceapi

@@ -5,7 +5,7 @@ import Dropzone from 'react-dropzone'
 
 import { FaceFinder } from '../ml/face'
 import { EmotionNet } from '../ml/models'
-import { imgLoaded, readFile } from '../util'
+import { readFile, nextFrame } from '../util'
 
 class App2 extends Component {
   state = { modelsReady: false, imgUrl: null, loading: false }
@@ -15,13 +15,13 @@ class App2 extends Component {
   }
 
   initModels = async () => {
-    const face = new FaceFinder()
-    await face.load()
+    const faceModel = new FaceFinder()
+    await faceModel.load()
 
-    const emotion = new EmotionNet()
-    await emotion.load()
+    const emotionModel = new EmotionNet()
+    await emotionModel.load()
 
-    this.models = { face, emotion }
+    this.models = { faces: faceModel, emotions: emotionModel }
     this.setState({ modelsReady: true })
   }
 
@@ -31,16 +31,34 @@ class App2 extends Component {
     const results = await readFile(files[0])
     console.log(results)
 
-    this.setState({ imgUrl: results.url, loading: true }, this.analyzeFaces)
+    this.setState({ imgUrl: results.url, loading: true })
+  }
+
+  handleImgLoaded = async () => {
+    this.initCanvas()
+    this.analyzeFaces()
   }
 
   analyzeFaces = async () => {
-    await imgLoaded(this.img)
+    await nextFrame()
 
-    this.adjustCanvas()
+    const {
+      detections,
+      faceImgs
+    } = await this.models.faces.findAndExtractFaces(this.img)
+
+    console.log(detections)
+    console.log(faceImgs)
+
+    this.setState({ loading: false })
+
+    // this.canvas.width = width
+    // this.canvas.height = height
+    // drawDetection(this.canvas, detections) // something is busted here
+    // faceImgs.forEach(canvas => this.facesContainer.appendChild(canvas))
   }
 
-  adjustCanvas = () => {
+  initCanvas = () => {
     const { width, height } = this.img
     const ctx = this.canvas.getContext('2d')
 
@@ -56,7 +74,7 @@ class App2 extends Component {
     const { modelsReady, imgUrl, loading } = this.state
 
     return (
-      <div className="container px2 py3">
+      <div className="container py3">
         <div className="mb1">
           models {modelsReady ? 'ready!' : 'loading...'}
         </div>
@@ -72,8 +90,14 @@ class App2 extends Component {
         </div>
         {imgUrl && (
           <div className="relative">
-            <img ref={el => (this.img = el)} src={imgUrl} alt="uploaded" />
+            <img
+              ref={el => (this.img = el)}
+              onLoad={this.handleImgLoaded}
+              src={imgUrl}
+              alt=""
+            />
             <canvas ref={el => (this.canvas = el)} className="overlay" />
+            <div ref={el => (this.facesContainer = el)} className="faces" />
           </div>
         )}
         {loading && <p>Loading...</p>}

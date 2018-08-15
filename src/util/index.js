@@ -18,3 +18,8 @@ export const readFile = file =>
     reader.onload = () => resolve({ file, url: reader.result })
     reader.readAsDataURL(file)
   })
+
+export const nextFrame = () =>
+  new Promise(resolve => {
+    requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+  })
