@@ -1,77 +1,85 @@
-import React, { Component } from 'react'
-import Dropzone from 'react-dropzone'
+import React, { Component } from 'react';
+import Dropzone from 'react-dropzone';
 
 // import facesImg from '../img/faces.jpg'
 
-import { FaceFinder } from '../ml/face'
-import { EmotionNet } from '../ml/models'
-import { readFile, nextFrame } from '../util'
+import { FaceFinder, drawDetection } from '../ml/face';
+import { EmotionNet } from '../ml/models';
+import { readFile, nextFrame } from '../util';
 
 class App2 extends Component {
-  state = { modelsReady: false, imgUrl: null, loading: false }
+  state = { modelsReady: false, imgUrl: null, loading: false };
 
   componentDidMount() {
-    this.initModels()
+    this.initModels();
   }
 
   initModels = async () => {
-    const faceModel = new FaceFinder()
-    await faceModel.load()
+    const faceModel = new FaceFinder();
+    await faceModel.load();
 
-    const emotionModel = new EmotionNet()
-    await emotionModel.load()
+    const emotionModel = new EmotionNet();
+    await emotionModel.load();
 
-    this.models = { faces: faceModel, emotions: emotionModel }
-    this.setState({ modelsReady: true })
-  }
+    this.models = { faces: faceModel, emotions: emotionModel };
+    this.setState({ modelsReady: true });
+  };
 
   handleUpload = async files => {
-    if (!files.length) return
+    if (!files.length) return;
 
-    const results = await readFile(files[0])
-    console.log(results)
+    const results = await readFile(files[0]);
+    console.log(results);
 
-    this.setState({ imgUrl: results.url, loading: true })
-  }
+    this.setState({ imgUrl: results.url, loading: true });
+  };
 
   handleImgLoaded = async () => {
-    this.initCanvas()
-    this.analyzeFaces()
-  }
+    this.initCanvas();
+    this.analyzeFaces();
+  };
 
   analyzeFaces = async () => {
-    await nextFrame()
+    await nextFrame();
+
+    const { width, height } = this.img;
 
     const {
       detections,
-      faceImgs
-    } = await this.models.faces.findAndExtractFaces(this.img)
+      faceImgs,
+    } = await this.models.faces.findAndExtractFaces(this.img);
+    const detectionsFit = detections.map(d => d.forSize(width, height));
+    const emotionResults = await Promise.all(
+      faceImgs.map(async img => await this.models.emotions.classify(img))
+    );
 
-    console.log(detections)
-    console.log(faceImgs)
+    console.log(detectionsFit);
+    console.log(faceImgs);
+    console.log(emotionResults);
 
-    this.setState({ loading: false })
+    this.setState({ loading: false });
 
-    // this.canvas.width = width
-    // this.canvas.height = height
-    // drawDetection(this.canvas, detections) // something is busted here
-    // faceImgs.forEach(canvas => this.facesContainer.appendChild(canvas))
-  }
+    this.canvas.width = width;
+    this.canvas.height = height;
+    drawDetection(this.canvas, detectionsFit); // something is busted here
+
+    // faceImgs.forEach(canvas => this.facesContainer.appendChild(canvas));
+  };
 
   initCanvas = () => {
-    const { width, height } = this.img
-    const ctx = this.canvas.getContext('2d')
+    const { width, height } = this.img;
+    const ctx = this.canvas.getContext('2d');
 
-    this.canvas.width = width
-    this.canvas.height = height
+    this.canvas.width = width;
+    this.canvas.height = height;
 
-    ctx.strokeStyle = 'red'
-    ctx.lineWidth = 5
-    ctx.strokeRect(0, 0, width, height)
-  }
+    ctx.strokeStyle = 'red';
+    ctx.lineWidth = 5;
+    ctx.strokeRect(0, 0, width, height);
+  };
 
   render() {
-    const { modelsReady, imgUrl, loading } = this.state
+    const { modelsReady, imgUrl, loading } = this.state;
 
     return (
       <div className="container py3">
@@ -102,8 +110,8 @@ class App2 extends Component {
         )}
         {loading && <p>Loading...</p>}
       </div>
-    )
+    );
   }
 }
 
-export default App2
+export default App2;
