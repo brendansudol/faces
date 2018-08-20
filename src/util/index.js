@@ -23,3 +23,28 @@ export const nextFrame = () =>
   new Promise(resolve => {
     requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
   })
+
+export const emojiLookup = {
+  Angry: '😠',
+  Disgust: '🤢',
+  Fear: '😨',
+  Happy: '😄',
+  Sad: '🙁',
+  Surprise: '😲',
+  Neutral: '😐',
+}
+
+export const drawBox = ({ ctx, x, y, width, height }) => {
+  ctx.strokeStyle = 'red'
+  ctx.lineWidth = '3'
+  ctx.strokeRect(x, y, width, height)
+}
+
+export const drawText = ({ ctx, x, y, text }) => {
+  const pad = 4
+
+  ctx.fillStyle = 'red'
+  ctx.font = '16px Arial'
+  ctx.textBaseline = 'top'
+  ctx.fillText(text, x + pad, y + pad)
+}
