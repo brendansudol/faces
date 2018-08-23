@@ -34,3 +34,11 @@ p {
   width: 1px;
   height: 1px;
 }
+
+.w-90 {
+  width: 90px;
+}
+
+.fs-12 {
+  font-size: 12px;
+}

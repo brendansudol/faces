@@ -24,7 +24,7 @@ export const nextFrame = () =>
     requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
   })
 
-export const emojiLookup = {
+export const nameToEmoji = {
   Angry: '😠',
   Disgust: '🤢',
   Fear: '😨',

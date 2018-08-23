@@ -1,14 +1,14 @@
-export const GENDER = { 0: 'Woman', 1: 'Man' }
-
 export const EMOTION = {
-  0: 'Angry',
-  1: 'Disgust',
-  2: 'Fear',
-  3: 'Happy',
-  4: 'Sad',
-  5: 'Surprise',
-  6: 'Neutral'
+  0: { name: 'Angry', emoji: '😠' },
+  1: { name: 'Disgust', emoji: '🤢' },
+  2: { name: 'Fear', emoji: '😨' },
+  3: { name: 'Happy', emoji: '😄' },
+  4: { name: 'Sad', emoji: '🙁' },
+  5: { name: 'Surprise', emoji: '😲' },
+  6: { name: 'Neutral', emoji: '😐' },
 }
+
+export const GENDER = { 0: 'Woman', 1: 'Man' }
 
 export const IMAGENET = {
   0: 'tench, Tinca tinca',
@@ -1010,5 +1010,5 @@ export const IMAGENET = {
   996: 'hen-of-the-woods, hen of the woods, Polyporus frondosus, Grifola frondosa',
   997: 'bolete',
   998: 'ear, spike, capitulum',
-  999: 'toilet tissue, toilet paper, bathroom tissue'
+  999: 'toilet tissue, toilet paper, bathroom tissue',
 }

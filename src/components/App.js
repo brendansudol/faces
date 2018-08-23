@@ -1,14 +1,18 @@
 import React, { Component } from 'react'
 import Dropzone from 'react-dropzone'
 
-// import facesImg from '../img/faces.jpg'
-
 import { FaceFinder } from '../ml/face'
 import { EmotionNet } from '../ml/models'
-import { readFile, nextFrame, emojiLookup, drawBox, drawText } from '../util'
+import { readFile, nextFrame, drawBox, drawText } from '../util'
 
 class App extends Component {
-  state = { modelsReady: false, imgUrl: null, loading: false, results: [] }
+  state = {
+    modelsReady: false,
+    imgUrl: null,
+    loading: false,
+    faces: [],
+    results: [],
+  }
 
   componentDidMount() {
     this.initModels()
@@ -27,14 +31,11 @@ class App extends Component {
 
   handleUpload = async files => {
     if (!files.length) return
-
-    const results = await readFile(files[0])
-    console.log(results)
-
-    this.setState({ imgUrl: results.url, loading: true, results: [] })
+    const fileData = await readFile(files[0])
+    this.setState({ imgUrl: fileData.url, loading: true, results: [] })
   }
 
-  handleImgLoaded = async () => {
+  handleImgLoaded = () => {
     this.initCanvas()
     this.analyzeFaces()
   }
@@ -42,34 +43,30 @@ class App extends Component {
   analyzeFaces = async () => {
     await nextFrame()
 
-    const { width, height } = this.img
-
+    // get face bounding boxes and canvases
     const {
-      detections,
-      faceImgs,
+      detectionsResized,
+      faces,
     } = await this.models.faces.findAndExtractFaces(this.img)
 
-    const detectionsResized = detections.map(d => d.forSize(width, height))
-    const emotionResults = await Promise.all(
-      faceImgs.map(async img => await this.models.emotions.classify(img))
+    // get emotion predictions
+    let results = await Promise.all(
+      faces.map(async face => await this.models.emotions.classify(face))
     )
-    const emojis = emotionResults.map(r => emojiLookup[r[0].label] || '🤷')
 
-    console.log(detectionsResized)
-    console.log(emotionResults)
-
-    this.drawStuff(detectionsResized, emojis)
-    this.setState({ loading: false, results: emojis })
-    // faceImgs.forEach(canvas => this.facesContainer.appendChild(canvas));
+    this.drawDetections(detectionsResized, results)
+    this.setState({ loading: false, faces, results })
   }
 
-  drawStuff = (faceBoxes, emojis) => {
+  drawDetections = (detections, predictions) => {
     const ctx = this.canvas.getContext('2d')
 
-    faceBoxes.forEach((box, i) => {
-      const { x, y } = box.box
-      drawBox({ ctx, ...box.box })
-      drawText({ ctx, x, y, text: emojis[i] })
+    detections.forEach((det, i) => {
+      const { x, y } = det.box
+      const text = predictions[i][0].label.emoji
+
+      drawBox({ ctx, ...det.box })
+      drawText({ ctx, x, y, text })
     })
   }
 
@@ -83,10 +80,10 @@ class App extends Component {
   }
 
   render() {
-    const { modelsReady, imgUrl, loading, results } = this.state
+    const { modelsReady, imgUrl, loading, faces, results } = this.state
 
     return (
-      <div className="container py3">
+      <div className="container px2 py3">
         <div className="mb1">
           models {modelsReady ? 'ready!' : 'loading...'}
         </div>
@@ -109,11 +106,29 @@ class App extends Component {
               alt=""
             />
             <canvas ref={el => (this.canvas = el)} className="overlay" />
-            <div ref={el => (this.facesContainer = el)} className="faces" />
           </div>
         )}
-        {results.length > 0 && <p>{results.join(', ')}</p>}
         {loading && <p>Loading...</p>}
+        {faces.length > 0 && (
+          <div className="flex flex-wrap mxn1 mt1">
+            {faces.map((face, i) => (
+              <div key={i} className="mb1 px1">
+                <img
+                  src={face.toDataURL()}
+                  alt={`face ${i + 1}`}
+                  className="w-90"
+                />
+                <div className="fs-12 w-90">
+                  {results[i].slice(0, 3).map(({ label }) => (
+                    <div className="truncate">
+                      {label.emoji} ({label.name})
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     )
   }
