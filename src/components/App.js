@@ -74,6 +74,8 @@ class App extends Component {
     const { width, height } = this.img
     const ctx = this.canvas.getContext('2d')
 
+    window.canvas = this.canvas
+
     this.canvas.width = width
     this.canvas.height = height
     drawBox({ ctx, x: 0, y: 0, width, height })
@@ -120,7 +122,7 @@ class App extends Component {
                 />
                 <div className="fs-12 w-90">
                   {results[i].slice(0, 3).map(({ label }) => (
-                    <div className="truncate">
+                    <div key={label.name} className="truncate">
                       {label.emoji} ({label.name})
                     </div>
                   ))}
