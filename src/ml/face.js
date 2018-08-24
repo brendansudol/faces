@@ -25,19 +25,15 @@ export class FaceFinder {
   async findFaces(img) {
     const input = await faceapi.toNetInput(img, false, true)
     const results = await this.model.forward(input, this.params)
-
     const detections = results.map(r => r.faceDetection)
-    const detectionsResized = detections.map(d =>
-      d.forSize(img.width, img.height)
-    )
 
-    return { input, detections, detectionsResized }
+    return { input, detections }
   }
 
   async findAndExtractFaces(img) {
-    const { input, detections, detectionsResized } = await this.findFaces(img)
+    const { input, detections } = await this.findFaces(img)
     const faces = await faceapi.extractFaces(input.inputs[0], detections)
 
-    return { detections, detectionsResized, faces }
+    return { detections, faces }
   }
 }

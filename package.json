@@ -9,6 +9,7 @@
     "@tensorflow/tfjs-layers": "^0.7.2",
     "ace-css": "^1.1.0",
     "face-api.js": "^0.10.0",
+    "lodash.debounce": "^4.0.8",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
     "react-dropzone": "^4.3.0",
