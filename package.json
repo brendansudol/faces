@@ -8,6 +8,7 @@
     "@tensorflow/tfjs-core": "^0.11.9",
     "@tensorflow/tfjs-layers": "^0.7.2",
     "ace-css": "^1.1.0",
+    "d3-format": "^1.3.2",
     "face-api.js": "^0.10.0",
     "lodash.debounce": "^4.0.8",
     "react": "^16.4.1",

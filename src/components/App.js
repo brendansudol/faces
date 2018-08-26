@@ -2,6 +2,11 @@ import debounce from 'lodash.debounce'
 import React, { Component, Fragment } from 'react'
 import Dropzone from 'react-dropzone'
 
+import Alert from './Alert'
+import Footer from './Footer'
+import Header from './Header'
+import Results from './Results'
+
 import sampleImgUrl from '../img/faces.jpg'
 import { FaceFinder } from '../ml/face'
 import { EmotionNet } from '../ml/models'
@@ -9,7 +14,7 @@ import { readFile, nextFrame, drawBox, drawText } from '../util'
 
 class App extends Component {
   state = {
-    modelsReady: false,
+    ready: false,
     imgUrl: sampleImgUrl,
     loading: false,
     detections: [],
@@ -34,10 +39,11 @@ class App extends Component {
     await emotionModel.load()
 
     this.models = { faces: faceModel, emotions: emotionModel }
-    this.setState({ modelsReady: true }, this.initPredict)
+    this.setState({ ready: true }, this.initPredict)
   }
 
   initPredict = () => {
+    // return
     if (!this.img.complete) return
     this.setState({ loading: true })
     this.analyzeFaces()
@@ -99,8 +105,6 @@ class App extends Component {
     const ctx = this.canvas.getContext('2d')
     const detectionsResized = detections.map(d => d.forSize(width, height))
 
-    drawBox({ ctx, x: 0, y: 0, width, height })
-
     detectionsResized.forEach((det, i) => {
       const { x, y } = det.box
       const text = results[i][0].label.emoji
@@ -111,23 +115,20 @@ class App extends Component {
   }
 
   render() {
-    const { modelsReady, imgUrl, loading, faces, results } = this.state
+    const { ready, imgUrl, loading, faces, results } = this.state
+
+    console.log(results)
 
     return (
       <Fragment>
-        <div className="container mx-auto px2 py3">
-          <div className="mb2">
-            <h1 className="m0 h2">Face & Emotion Net</h1>
-            <p className="h3">Lorem ipsum...</p>
-          </div>
-          <div className="mb1">
-            models {modelsReady ? 'ready!' : 'loading...'}
-          </div>
+        <div className="container mx-auto p2">
+          <Header />
           <div className="mb1">
             <Dropzone
-              className="btn btn-primary btn-upload"
+              className="btn btn-primary bg-yellow black btn-upload"
               accept="image/jpeg, image/png"
               multiple={false}
+              disabled={!ready}
               onDrop={this.handleUpload}
             >
               Upload image
@@ -145,35 +146,13 @@ class App extends Component {
                 ref={el => (this.canvas = el)}
                 className="absolute top-0 left-0"
               />
-              <canvas
-                ref={el => (this.canvasTmp = el)}
-                className="display-none"
-              />
             </div>
           )}
-          {loading && <p>Loading...</p>}
-          {faces.length > 0 && (
-            <div className="flex flex-wrap mxn1 mt1">
-              {faces.map((face, i) => (
-                <div key={i} className="mb1 px1">
-                  <img
-                    src={face.toDataURL()}
-                    alt={`face ${i + 1}`}
-                    className="w-90"
-                  />
-                  <div className="fs-12 w-90">
-                    {results[i].slice(0, 3).map(({ label }) => (
-                      <div key={label.name} className="truncate">
-                        {label.emoji} ({label.name})
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+          {!ready && <Alert>Loading machine learning models...</Alert>}
+          {loading && <Alert>Analyzing image...</Alert>}
+          {faces.length > 0 && <Results faces={faces} results={results} />}
         </div>
-        <footer className="footer h5 center">footer stuff</footer>
+        <Footer />
       </Fragment>
     )
   }

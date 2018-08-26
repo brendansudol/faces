@@ -9,7 +9,7 @@ p {
 }
 
 .container {
-  max-width: 700px;
+  max-width: 660px;
 }
 
 .btn-upload input {
@@ -39,10 +39,24 @@ body {
 
 /* misc utilities */
 
+.mr05 {
+  margin-right: 0.25rem;
+}
+
+.p05 {
+  padding: 0.25rem;
+}
+
 .w-90 {
   width: 90px;
 }
 
-.fs-12 {
-  font-size: 12px;
+.fs-11 {
+  font-size: 11px;
+}
+
+@media (min-width: 52em) {
+  .md-col-5th {
+    width: 20%;
+  }
 }
