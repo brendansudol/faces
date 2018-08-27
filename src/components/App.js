@@ -125,13 +125,13 @@ class App extends Component {
           <Header />
           <div className="mb1">
             <Dropzone
-              className="btn btn-primary bg-yellow black btn-upload"
+              className="btn btn-small btn-primary btn-upload bg-yellow black h5"
               accept="image/jpeg, image/png"
               multiple={false}
               disabled={!ready}
               onDrop={this.handleUpload}
             >
-              Upload image
+              Upload another image
             </Dropzone>
           </div>
           {imgUrl && (
