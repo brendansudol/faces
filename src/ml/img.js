@@ -2,14 +2,6 @@ import { tf } from './tf'
 
 const NORMALIZATION_OFFSET = tf.scalar(127.5)
 
-export const getImg = src =>
-  new Promise(resolve => {
-    const img = new Image()
-    img.src = src
-    img.crossOrigin = '*'
-    img.onload = () => resolve(img)
-  })
-
 export const prepImg = (img, size) => {
   // Convert to tensor
   const imgTensor = tf.fromPixels(img)

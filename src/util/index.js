@@ -42,7 +42,6 @@ export const drawBox = ({ ctx, x, y, width, height }) => {
 
 export const drawText = ({ ctx, x, y, text }) => {
   const pad = 4
-
   ctx.fillStyle = '#feda31'
   ctx.font = '16px Arial'
   ctx.textBaseline = 'top'

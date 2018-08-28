@@ -1,7 +1,7 @@
 import React from 'react'
 
 const Header = ({ children }) => (
-  <header className="mb3">
+  <header className="my2">
     <h2 className="m0 h3">😄😐🙁</h2>
     <h1 className="my1 h2">Emotion Extractor</h1>
     <p className="m0">

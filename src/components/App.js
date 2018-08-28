@@ -2,12 +2,12 @@ import debounce from 'lodash.debounce'
 import React, { Component, Fragment } from 'react'
 import Dropzone from 'react-dropzone'
 
-import Alert from './Alert'
 import Footer from './Footer'
 import Header from './Header'
+import Message from './Message'
 import Results from './Results'
 
-import sampleImgUrl from '../img/faces.jpg'
+// import sampleImg from '../img/faces.jpg'
 import { FaceFinder } from '../ml/face'
 import { EmotionNet } from '../ml/models'
 import { readFile, nextFrame, drawBox, drawText } from '../util'
@@ -15,11 +15,11 @@ import { readFile, nextFrame, drawBox, drawText } from '../util'
 class App extends Component {
   state = {
     ready: false,
-    imgUrl: sampleImgUrl,
     loading: false,
+    imgUrl: null,
     detections: [],
     faces: [],
-    results: [],
+    emotions: [],
   }
 
   componentDidMount() {
@@ -38,13 +38,12 @@ class App extends Component {
     const emotionModel = new EmotionNet()
     await emotionModel.load()
 
-    this.models = { faces: faceModel, emotions: emotionModel }
+    this.models = { face: faceModel, emotion: emotionModel }
     this.setState({ ready: true }, this.initPredict)
   }
 
   initPredict = () => {
-    // return
-    if (!this.img.complete) return
+    if (!this.img || !this.img.complete) return
     this.setState({ loading: true })
     this.analyzeFaces()
   }
@@ -64,7 +63,7 @@ class App extends Component {
       loading: true,
       detections: [],
       faces: [],
-      results: [],
+      emotions: [],
     })
   }
 
@@ -74,16 +73,16 @@ class App extends Component {
     if (!this.models) return
 
     // get face bounding boxes and canvases
-    const faceResults = await this.models.faces.findAndExtractFaces(this.img)
+    const faceResults = await this.models.face.findAndExtractFaces(this.img)
     const { detections, faces } = faceResults
 
     // get emotion predictions
-    let results = await Promise.all(
-      faces.map(async face => await this.models.emotions.classify(face))
+    let emotions = await Promise.all(
+      faces.map(async face => await this.models.emotion.classify(face))
     )
 
     this.setState(
-      { loading: false, detections, faces, results },
+      { loading: false, detections, faces, emotions },
       this.drawDetections
     )
   }
@@ -94,11 +93,10 @@ class App extends Component {
   }
 
   drawDetections = () => {
-    const { detections, results } = this.state
-    const { width, height } = this.img
-
+    const { detections, emotions } = this.state
     if (!detections.length) return
 
+    const { width, height } = this.img
     this.canvas.width = width
     this.canvas.height = height
 
@@ -107,31 +105,30 @@ class App extends Component {
 
     detectionsResized.forEach((det, i) => {
       const { x, y } = det.box
-      const text = results[i][0].label.emoji
+      const { emoji } = emotions[i][0].label
 
       drawBox({ ctx, ...det.box })
-      drawText({ ctx, x, y, text })
+      drawText({ ctx, x, y, text: emoji })
     })
   }
 
   render() {
-    const { ready, imgUrl, loading, faces, results } = this.state
-
-    console.log(results)
+    const { ready, imgUrl, loading, faces, emotions } = this.state
+    const noFaces = ready && !loading && imgUrl && !faces.length
 
     return (
-      <Fragment>
-        <div className="container mx-auto p2">
-          <Header />
-          <div className="mb1">
+      <div className="px2 mx-auto container app">
+        <Header />
+        <main>
+          <div className="py1">
             <Dropzone
-              className="btn btn-small btn-primary btn-upload bg-yellow black h5"
+              className="btn btn-small btn-primary btn-upload bg-black h5"
               accept="image/jpeg, image/png"
               multiple={false}
               disabled={!ready}
               onDrop={this.handleUpload}
             >
-              Upload another image
+              Upload image
             </Dropzone>
           </div>
           {imgUrl && (
@@ -148,12 +145,18 @@ class App extends Component {
               />
             </div>
           )}
-          {!ready && <Alert>Loading machine learning models...</Alert>}
-          {loading && <Alert>Analyzing image...</Alert>}
-          {faces.length > 0 && <Results faces={faces} results={results} />}
-        </div>
+          {!ready && <Message>Loading machine learning models...</Message>}
+          {loading && <Message>Analyzing image...</Message>}
+          {noFaces && (
+            <Message bg="red" color="white">
+              <strong>Sorry!</strong> No faces were detected. Please try another
+              image.
+            </Message>
+          )}
+          {faces.length > 0 && <Results faces={faces} emotions={emotions} />}
+        </main>
         <Footer />
-      </Fragment>
+      </div>
     )
   }
 }

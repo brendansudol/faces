@@ -2,12 +2,22 @@ stay tuned!
 
 TODO:
 
-* tally up and display emoji stats
 * readme
 * copy
-* no faces found state
-* better naming?
+
+DONE * better naming?
+DONE * tally up and display emoji stats
+DONE * no faces found state
 DONE * responsive canvas
 DONE * add prediction values (formatted)
 DONE * header / footer
 DONE * intro / sample image?
+DONE * favicon
+
+SMALL THINGS:
+
+* clean up src/img dir
+* clean up public/static/ dir
+* jsx-a11y/accessible-emoji
+* remove dead code
+
