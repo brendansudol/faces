@@ -1,5 +1,5 @@
 import debounce from 'lodash.debounce'
-import React, { Component, Fragment } from 'react'
+import React, { Component } from 'react'
 import Dropzone from 'react-dropzone'
 
 import Footer from './Footer'
@@ -7,7 +7,7 @@ import Header from './Header'
 import Message from './Message'
 import Results from './Results'
 
-// import sampleImg from '../img/faces.jpg'
+import sampleImg from '../img/sample.jpg'
 import { FaceFinder } from '../ml/face'
 import { EmotionNet } from '../ml/models'
 import { readFile, nextFrame, drawBox, drawText } from '../util'
@@ -16,7 +16,7 @@ class App extends Component {
   state = {
     ready: false,
     loading: false,
-    imgUrl: null,
+    imgUrl: sampleImg,
     detections: [],
     faces: [],
     emotions: [],

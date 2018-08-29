@@ -12,7 +12,7 @@ const Summary = ({ total, happy }) => (
     <strong>
       {happy} ({fmt(happy / total, 0)})
     </strong>{' '}
-    {total > 1 ? 'are' : 'is'} happy.
+    {happy === 1 ? 'is' : 'are'} happy.
   </Message>
 )
 
@@ -31,7 +31,7 @@ const Results = ({ faces, emotions }) => (
               alt={`face ${i + 1}`}
               className="block col-12"
             />
-            <div className="p05 fs-11">
+            <div className="p05 fs-tiny">
               {emotions[i].slice(0, 2).map(({ label, value }) => (
                 <div key={label.name} className="flex justify-between">
                   <div className="mr05 truncate">

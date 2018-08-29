@@ -58,8 +58,8 @@ main {
   padding: 0.25rem;
 }
 
-.fs-11 {
-  font-size: 11px;
+.fs-tiny {
+  font-size: 10px;
 }
 
 .bg-light {

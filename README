@@ -1,19 +1,9 @@
 😄😐🙁
 
-A machine learning demo of face detection and emotion classification with Tensorflow.js
+emotion classification with Tensorflow.js
 
 Writeup: WRITEUP_LINK
 
 DEMO_LINK
 
 ---
-
-TODO:
-* clean up src/img dir
-* clean up public/static/ dir
-* jsx-a11y/accessible-emoji
-* remove dead code
-* readme
-* copy
-* example image?
-
