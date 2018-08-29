@@ -13,7 +13,8 @@ const Header = ({ children }) => (
     <p className="m0">
       Upload a photo and see who’s happy to be there. This demo uses{' '}
       <a href="https://js.tensorflow.org/">Tensorflow.js</a> and neural networks
-      to detect faces and classify emotions. More details <a href="#!">here</a>.
+      to detect faces and classify emotions. More details{' '}
+      <a href="https://brendansudol.com/writing/tfjs-emotions">here</a>.
     </p>
   </header>
 )
